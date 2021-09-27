@@ -8,7 +8,7 @@ export const useLocalStorage = (key, initialValue) => {
   const [value, setValue] = useState(null);
   useEffect(() => {
     const jsonValue = localStorage.getItem(prefixedKey);
-    if (jsonValue != null) {
+    if (jsonValue !== null) {
       setValue(JSON.parse(jsonValue));
     } else {
       if (typeof initialValue === 'function') {

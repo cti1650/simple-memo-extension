@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import cc from 'classcat';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 type PageTabsProp = {
   pageCount?: number,
@@ -10,18 +11,18 @@ type PageTabsProp = {
 
 export const PageTabs = (props: PageTabsProp) => {
   const { pageCount, onChange, onInit } = props;
-  const [tabIndex, setTabIndex] = useState(0);
-  const handleTabChange = (index) => {
+  const [tabIndex, setTabIndex] = useLocalStorage('tabPage', 0);
+  const handleTabChange = useCallback((index) => {
     if (typeof onChange === 'function') {
       onChange(index)
     }
-    setTabIndex(index);
-  }
+    setTabIndex(prev => { if (prev !== index) { return index } });
+  }, [onChange]);
   useEffect(() => {
     if (typeof onInit === 'function') {
       onInit(tabIndex);
     }
-  }, [])
+  }, [onInit])
   return (<>
     <div className="w-full">
       <div className="w-full flex flex-row">
