@@ -2,6 +2,7 @@ import Link from 'next/link';
 import cc from 'classcat';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { PageTab } from './Tab';
 
 type PageTabsProp = {
   pageCount?: number,
@@ -27,18 +28,19 @@ export const PageTabs = (props: PageTabsProp) => {
     <div className="w-full">
       <div className="w-full flex flex-row">
         {pageCount > 0 && [...new Array(pageCount)].map((item, index) => {
-          return (<button className={cc([
-            "w-full py-0.5 text-xl text-center border rounded-t-lg focus:outline-none",
-            {
-              "bg-white shadow-inner": tabIndex !== index,
-              "bg-blue-400 shadow": tabIndex === index
-            },
-          ])
-          }
-            onClick={() => { handleTabChange(index) }}
-          >
-            {index}
-          </button>)
+          return (<PageTab key={index} index={index} focus={tabIndex === index} onTabClick={handleTabChange}></PageTab>)
+          // return (<button className={cc([
+          //   "w-full py-0.5 text-xl text-center border rounded-t-lg focus:outline-none",
+          //   {
+          //     "bg-white shadow-inner": tabIndex !== index,
+          //     "bg-blue-400 shadow": tabIndex === index
+          //   },
+          // ])
+          // }
+          //   onClick={() => { handleTabChange(index) }}
+          // >
+          //   {index}
+          // </button>)
         })}
       </div>
     </div>

@@ -1,7 +1,7 @@
 {
   "name": "Simple Memo Extension",
   "description": "Simple Memo Extension",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "action": {
     "default_popup": "./dist/index.html",
     "default_icon": {

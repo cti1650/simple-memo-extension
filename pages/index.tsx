@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PageTabs } from '../components/tabs/Tabs';
 import { Textbox } from '../components/Textbox/Textbox';
 
 const Pages = () => {
     const [tabPage, setTabPage] = useState(0);
-    const handleChange = (index) => {
+    const handleChange = useCallback((index) => {
         setTabPage(index);
-        console.log(index);
-    }
+    }, [tabPage]);
     // console.log('rendaring');
     return (
         <>
