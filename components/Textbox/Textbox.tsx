@@ -30,7 +30,9 @@ export const Textbox = (props: PageTabsProp) => {
         </label>
         <label className="text-sm select-none">
           Memo
-          <textarea ref={ref} onChange={handleChange} className="w-full p-2 text-lg break-all border rounded-lg shadow-inner focus:outline-none" style={{ height: '430px' }} value={value}></textarea>
+          <div className="min-h-full">
+            <textarea ref={ref} onChange={handleChange} className="w-full p-2 text-lg break-all border rounded-lg shadow-inner focus:outline-none" style={{ height: '430px' }} value={value}></textarea>
+          </div>
         </label>
       </div>
     }
