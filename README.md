@@ -60,7 +60,7 @@ yarn dev
 #### a. 拡張機能の ZIP 化
 
 ```bash
-yarn zip
+yarn ext-zip
 ```
 
 #### b. 拡張機能用アイコンの自動生成
@@ -69,7 +69,7 @@ manifest.json と同一階層に icons/icon.png ファイル(サイズ 128px 以
 実行すると各サイズ(16px,19px,48px,128px)のアイコン生成と manifest.json へのパス設定を自動的に行います！
 
 ```bash
-yarn mkicon
+yarn ext-icon-transparent --near
 ```
 
 ## 3. 拡張機能のバージョン管理
@@ -77,19 +77,19 @@ yarn mkicon
 #### a. メジャーアップデート（機能に大きな変更があった場合）
 
 ```bash
-yarn major
+yarn ext-major
 ```
 
 #### b. マイナーアップデート（後方互換性を保つ変更があった場合）
 
 ```bash
-yarn minor
+yarn ext-minor
 ```
 
 #### c. パッチアップデート（バグ修正が行われた場合）
 
 ```bash
-yarn patch
+yarn ext-patch
 ```
 
 ※ `yarn export`時にはパッチアップデートが自動実行されます！
