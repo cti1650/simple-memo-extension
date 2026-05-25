@@ -1,44 +1,55 @@
-import Link from 'next/link';
-import cc from 'classcat';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useCallback } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-type PageTabsProp = {
-  saveKey?: number,
-  openKey?: number,
-}
-
-export const Textbox = (props: PageTabsProp) => {
-  const { saveKey, openKey } = props;
-  const refTitle = useRef(null);
-  const [title, setTitle] = useLocalStorage('title_' + saveKey, '');
-  const handleChangeTitle = useCallback((e) => {
-    setTitle(prev => { if (prev !== e.target.value) { return e.target.value } });
-  }, [saveKey]);
-  const ref = useRef(null);
-  const [value, setValue] = useLocalStorage(saveKey, '');
-  const handleChange = useCallback((e) => {
-    setValue(prev => { if (prev !== e.target.value) { return e.target.value } });
-  }, [saveKey]);
-  // console.log(value);
-  return (<>
-    {saveKey === openKey &&
-      <div className="w-full flex flex-col">
-        <label className="text-sm select-none">
-          Title
-          <input type='text' ref={refTitle} onChange={handleChangeTitle} className="w-full px-2 text-lg break-all border rounded-lg shadow-inner focus:outline-none" value={title} />
-        </label>
-        <label className="text-sm select-none">
-          Memo
-          <div className="min-h-full">
-            <textarea ref={ref} onChange={handleChange} className="w-full p-2 text-lg break-all border rounded-lg shadow-inner focus:outline-none" style={{ height: '430px' }} value={value}></textarea>
-          </div>
-        </label>
-      </div>
-    }
-  </>)
+type TextboxProp = {
+  saveKey: number;
+  openKey: number;
 };
 
-Textbox.defaultProps = {
-  key: 0,
-}
+export const Textbox = ({ saveKey, openKey }: TextboxProp) => {
+  const [title, setTitle] = useLocalStorage<string>(`title_${saveKey}`, '');
+  const [value, setValue] = useLocalStorage<string>(String(saveKey), '');
+
+  const handleChangeTitle = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const next = e.target.value;
+      setTitle((prev) => (prev !== next ? next : prev));
+    },
+    [setTitle],
+  );
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const next = e.target.value;
+      setValue((prev) => (prev !== next ? next : prev));
+    },
+    [setValue],
+  );
+
+  if (saveKey !== openKey) return null;
+
+  return (
+    <div className="w-full flex flex-col">
+      <label className="text-sm select-none">
+        Title
+        <input
+          type="text"
+          onChange={handleChangeTitle}
+          className="w-full px-2 text-lg break-all border border-gray-200 rounded-lg inset-shadow-sm focus:outline-none"
+          value={title ?? ''}
+        />
+      </label>
+      <label className="text-sm select-none">
+        Memo
+        <div className="min-h-full">
+          <textarea
+            onChange={handleChange}
+            className="w-full p-2 text-lg break-all border border-gray-200 rounded-lg inset-shadow-sm focus:outline-none"
+            style={{ height: '430px' }}
+            value={value ?? ''}
+          />
+        </div>
+      </label>
+    </div>
+  );
+};

@@ -1,95 +1,77 @@
-# はじめに
+# Simple Memo Extension
 
-このリポジトリは、Google Chrome の拡張を Next.js で書くためのテンプレートリポジトリになります。
+10タブ分のメモを Chrome 拡張機能のポップアップ / オプションページから編集・保存できるシンプルなメモ拡張機能です。データはブラウザの `localStorage` に保存されます。
 
-# 使い方
+## 技術スタック
 
-## 1. リポジトリを clone する
+- [WXT](https://wxt.dev/) (Manifest V3)
+- React 19 + TypeScript
+- Tailwind CSS v4
+- パッケージ管理: **pnpm**
+- Lint / Format: **Biome**
+- Test: **Vitest** + Testing Library (jsdom)
+- Git hooks: **Lefthook**
 
-```bash
-git clone https://github.com/cti1650/github-search-extension.git
-```
-
-## 2. ライブラリをインストールする
-
-```bash
-yarn
-```
-
-## 3. Chrome Extension を作成する
+## セットアップ
 
 ```bash
-yarn export
-```
-以下のコマンドを実行するとPopupページの見た目を  
-localhostで検証することができます！
-```bash
-yarn dev
+pnpm install
 ```
 
-## 4. Chrome Extension を登録する
+`postinstall` で `wxt prepare` が、`prepare` で `lefthook install` が自動実行されます。
 
-#### a. Chrome 拡張機能ページにアクセス
-
-```
-chrome://extensions/
-```
-
-#### b. 拡張機能をパッケージ化
-
-#### c. extensions ディレクトリをアップロード
-
-# 開発について
-
-- `Link`は可能ですが、`URL`の指定を`.html`まで記述する必要があります.
-- アプリ名などを指定する場合には`dist/manifest.json`を書き換えます.
-
-## 1. 公開用ファイルの生成
+## 開発
 
 ```bash
-yarn export
-```
-以下のコマンドを実行するとPopupページの見た目を  
-localhostで検証することができます！
-```bash
-yarn dev
+pnpm dev          # Chrome を自動起動してホットリロード
+pnpm dev:firefox  # Firefox
 ```
 
-## 2. 各オプション機能の実行
-
-#### a. 拡張機能の ZIP 化
+## ビルド・配布
 
 ```bash
-yarn ext-zip
+pnpm build          # .output/chrome-mv3/ に成果物を生成
+pnpm build:firefox  # Firefox 向け
+pnpm zip            # ストア提出用 zip
 ```
 
-#### b. 拡張機能用アイコンの自動生成
+`pnpm build` で生成された `.output/chrome-mv3/` を `chrome://extensions/` の「パッケージ化されていない拡張機能を読み込む」で読み込むと動作確認できます。
 
-manifest.json と同一階層に icons/icon.png ファイル(サイズ 128px 以上)を格納してから以下のコマンドを実行してください。  
-実行すると各サイズ(16px,19px,48px,128px)のアイコン生成と manifest.json へのパス設定を自動的に行います！
+## 品質チェック
 
 ```bash
-yarn ext-icon-transparent --near
+pnpm compile     # tsc --noEmit
+pnpm lint        # Biome check
+pnpm lint:fix    # Biome auto-fix
+pnpm format      # Biome format only
+pnpm test        # Vitest (run once)
+pnpm test:watch  # Vitest watch mode
 ```
 
-## 3. 拡張機能のバージョン管理
+## Git Hooks (Lefthook)
 
-#### a. メジャーアップデート（機能に大きな変更があった場合）
+| Hook | 実行内容 |
+| --- | --- |
+| `pre-commit` | staged ファイルに対して `biome check --write`（自動修正を再ステージ） |
+| `pre-push`   | `pnpm compile` と `pnpm test` |
 
-```bash
-yarn ext-major
+設定: [lefthook.yml](./lefthook.yml)
+
+## ディレクトリ構成
+
+```
+entrypoints/    # WXT エントリポイント (popup / options)
+components/     # React コンポーネント
+hooks/          # カスタムフック
+assets/         # グローバル CSS (Tailwind)
+public/         # 静的アセット (アイコン)
+tests/          # Vitest テスト
+wxt.config.ts   # WXT / manifest 設定
+biome.json      # Biome 設定
+vitest.config.ts
+lefthook.yml
 ```
 
-#### b. マイナーアップデート（後方互換性を保つ変更があった場合）
+## バージョン更新
 
-```bash
-yarn ext-minor
-```
-
-#### c. パッチアップデート（バグ修正が行われた場合）
-
-```bash
-yarn ext-patch
-```
-
-※ `yarn export`時にはパッチアップデートが自動実行されます！
+`package.json` の `version` を更新してから `pnpm build` してください（WXT が自動で `manifest.json` に反映します）。
