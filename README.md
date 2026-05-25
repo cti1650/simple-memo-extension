@@ -1,6 +1,20 @@
 # Simple Memo Extension
 
-10タブ分のメモを Chrome 拡張機能のポップアップ / オプションページから編集・保存できるシンプルなメモ拡張機能です。データはブラウザの `localStorage` に保存されます。
+10タブ分のメモを **Popup / Side panel / Options** の3面から編集・保存できるシンプルなメモ拡張機能です。データはブラウザの `localStorage` に保存されます。
+
+## 使い方
+
+| 表示面 | 開き方 | 用途 |
+| --- | --- | --- |
+| **Popup** | ツールバーのアイコンクリック | サッと書く・読む |
+| **Side panel** | アイコン上 or ページ上の右クリック → 「Simple Memo を side panel で開く」 / `Alt+Shift+M` | ブラウジング中に常時表示 |
+| **Options** | アイコン上 or ページ上の右クリック → 「Simple Memo を options ページで開く」 / `Alt+Shift+O` / 拡張機能管理画面の「オプション」 | 一覧から選んでじっくり編集 |
+
+### 共通操作
+
+- `Alt+0` 〜 `Alt+9` … タブを直接切り替え
+- タブ右上の青いドット … その番号にデータあり
+- Title / Memo 欄は入力即時保存（localStorage）
 
 ## 技術スタック
 
@@ -60,14 +74,22 @@ pnpm test:watch  # Vitest watch mode
 ## ディレクトリ構成
 
 ```
-entrypoints/    # WXT エントリポイント (popup / options)
-components/     # React コンポーネント
-hooks/          # カスタムフック
-assets/         # グローバル CSS (Tailwind)
-public/         # 静的アセット (アイコン)
-tests/          # Vitest テスト
-wxt.config.ts   # WXT / manifest 設定
-biome.json      # Biome 設定
+entrypoints/
+  popup/          # Popup (action click)
+  sidepanel/      # Side panel
+  options/        # Options page (open_in_tab)
+  background.ts   # 右クリックメニュー / Alt+Shift+M ハンドラ
+components/
+  layouts/        # PopupApp / SidepanelApp / OptionsApp
+  tabs/           # TabBar (horizontal) / TabList (vertical)
+  MemoEditor.tsx  # Title + Memo + 文字数
+  Layout/Header.tsx
+hooks/            # useLocalStorage / useActiveTab / useNumberShortcut
+assets/           # グローバル CSS (Tailwind)
+public/icons/
+tests/            # Vitest テスト
+wxt.config.ts     # WXT / manifest 設定
+biome.json
 vitest.config.ts
 lefthook.yml
 ```

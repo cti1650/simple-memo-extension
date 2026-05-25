@@ -28,6 +28,59 @@ describe('useLocalStorage', () => {
     const { result } = renderHook(() => useLocalStorage<number>('counter', 0));
     expect(result.current[0]).toBe(42);
   });
+
+  it('switches to the new key value when the key prop changes', () => {
+    localStorage.setItem('simple-memo-tab-0', JSON.stringify('A'));
+    localStorage.setItem('simple-memo-tab-5', JSON.stringify('B'));
+
+    const { result, rerender } = renderHook(
+      ({ key }: { key: string }) => useLocalStorage<string>(key, ''),
+      { initialProps: { key: 'tab-0' } },
+    );
+
+    expect(result.current[0]).toBe('A');
+
+    rerender({ key: 'tab-5' });
+
+    expect(result.current[0]).toBe('B');
+  });
+
+  it('does NOT overwrite another key when the key prop changes (regression)', () => {
+    // Reproduces the Alt+number tab switch bug:
+    // 旧実装では key 変更時に save effect が前 key の value を新 key に書き込んでしまった。
+    localStorage.setItem('simple-memo-tab-0', JSON.stringify('A'));
+    localStorage.setItem('simple-memo-tab-5', JSON.stringify('B'));
+
+    const { rerender } = renderHook(
+      ({ key }: { key: string }) => useLocalStorage<string>(key, ''),
+      { initialProps: { key: 'tab-0' } },
+    );
+
+    rerender({ key: 'tab-5' });
+
+    expect(localStorage.getItem('simple-memo-tab-5')).toBe(JSON.stringify('B'));
+    expect(localStorage.getItem('simple-memo-tab-0')).toBe(JSON.stringify('A'));
+  });
+
+  it('writes to the correct key after switching and typing', () => {
+    localStorage.setItem('simple-memo-tab-0', JSON.stringify('A'));
+    localStorage.setItem('simple-memo-tab-5', JSON.stringify('B'));
+
+    const { result, rerender } = renderHook(
+      ({ key }: { key: string }) => useLocalStorage<string>(key, ''),
+      { initialProps: { key: 'tab-0' } },
+    );
+
+    rerender({ key: 'tab-5' });
+
+    act(() => {
+      result.current[1]('BX');
+    });
+
+    expect(result.current[0]).toBe('BX');
+    expect(localStorage.getItem('simple-memo-tab-5')).toBe(JSON.stringify('BX'));
+    expect(localStorage.getItem('simple-memo-tab-0')).toBe(JSON.stringify('A'));
+  });
 });
 
 describe('useLocalStorageData', () => {

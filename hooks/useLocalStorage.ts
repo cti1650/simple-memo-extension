@@ -2,50 +2,69 @@ import { useCallback, useEffect, useState } from 'react';
 
 const PREFIX = 'simple-memo-';
 
-type Updater<T> = T | ((prev: T | null) => T | null);
+type Updater<T> = T | ((prev: T) => T);
+type Stored<T> = { key: string; value: T };
 
+function readFromStorage<T>(prefixedKey: string, fallback: T | (() => T)): T {
+  const raw = localStorage.getItem(prefixedKey);
+  if (raw !== null) {
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      // fall through to fallback
+    }
+  }
+  return typeof fallback === 'function' ? (fallback as () => T)() : fallback;
+}
+
+/**
+ * localStorage に値を同期するフック。
+ *
+ * `key` が render の途中で変化しても、別キーの値で上書きしないよう
+ * state に key を埋め込んでおき、save effect で必ず一致確認する。
+ */
 export function useLocalStorage<T>(
   key: string | number,
   initialValue: T | (() => T),
-): [T | null, (value: Updater<T>) => void] {
+): [T, (value: Updater<T>) => void] {
   const prefixedKey = PREFIX + key;
-  const [value, setValue] = useState<T | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: initialize once per key
-  useEffect(() => {
-    const jsonValue = localStorage.getItem(prefixedKey);
-    if (jsonValue !== null) {
-      try {
-        setValue(JSON.parse(jsonValue) as T);
-        return;
-      } catch {
-        // fall through to initial
-      }
-    }
-    setValue(typeof initialValue === 'function' ? (initialValue as () => T)() : initialValue);
-  }, [prefixedKey]);
+  const [stored, setStored] = useState<Stored<T>>(() => ({
+    key: prefixedKey,
+    value: readFromStorage<T>(prefixedKey, initialValue),
+  }));
+
+  // key prop が変わったら同じ render 内で新 key の値を読み直す。
+  // 古い state を表示する frame をゼロにするため、計算した値をそのまま返す。
+  let currentValue = stored.value;
+  if (stored.key !== prefixedKey) {
+    currentValue = readFromStorage<T>(prefixedKey, initialValue);
+    setStored({ key: prefixedKey, value: currentValue });
+  }
 
   useEffect(() => {
-    if (value === null) return;
-    localStorage.setItem(prefixedKey, JSON.stringify(value));
-  }, [prefixedKey, value]);
+    // state が前 key のものなら書き込まない（クロスキー上書きの防止）。
+    if (stored.key !== prefixedKey) return;
+    localStorage.setItem(prefixedKey, JSON.stringify(stored.value));
+  }, [prefixedKey, stored]);
 
   const update = useCallback((next: Updater<T>) => {
-    setValue((prev) =>
-      typeof next === 'function' ? (next as (p: T | null) => T | null)(prev) : next,
-    );
+    setStored((prev) => {
+      const nextValue = typeof next === 'function' ? (next as (p: T) => T)(prev.value) : next;
+      return { key: prev.key, value: nextValue };
+    });
   }, []);
 
-  return [value, update];
+  return [currentValue, update];
 }
 
 export function useLocalStorageData<T>(key: string | number): [() => T | null] {
   const prefixedKey = PREFIX + key;
   const getValue = useCallback((): T | null => {
-    const jsonValue = localStorage.getItem(prefixedKey);
-    if (jsonValue === null) return null;
+    const raw = localStorage.getItem(prefixedKey);
+    if (raw === null) return null;
     try {
-      return JSON.parse(jsonValue) as T;
+      return JSON.parse(raw) as T;
     } catch {
       return null;
     }

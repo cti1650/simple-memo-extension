@@ -6,9 +6,28 @@ export default defineConfig({
   manifest: {
     name: 'Simple Memo Extension',
     description: 'Simple Memo Extension',
-    permissions: [],
+    permissions: ['contextMenus', 'sidePanel'],
     action: {
       default_title: 'Simple Memo Extension',
+    },
+    side_panel: {
+      default_path: 'sidepanel.html',
+    },
+    commands: {
+      'open-sidepanel': {
+        suggested_key: {
+          default: 'Alt+Shift+M',
+          mac: 'Alt+Shift+M',
+        },
+        description: 'Simple Memo を side panel で開く',
+      },
+      'open-options': {
+        suggested_key: {
+          default: 'Alt+Shift+O',
+          mac: 'Alt+Shift+O',
+        },
+        description: 'Simple Memo を options ページで開く',
+      },
     },
     icons: {
       16: 'icons/icon-16x16.png',

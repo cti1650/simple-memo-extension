@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import PopupApp from '@/components/layouts/PopupApp';
+import SidepanelApp from '@/components/layouts/SidepanelApp';
 import '@/assets/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <PopupApp />
+    <SidepanelApp />
   </React.StrictMode>,
 );
