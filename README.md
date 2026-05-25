@@ -1,6 +1,6 @@
 # Simple Memo Extension
 
-10タブ分のメモを **Popup / Side panel / Options** の3面から編集・保存できるシンプルなメモ拡張機能です。データはブラウザの `localStorage` に保存されます。
+10タブ分のメモを **Popup / Side panel / Options** の3面から編集・保存できるシンプルなメモ拡張機能です。データは `chrome.storage.local` に保存され、3画面の間でライブ同期されます。
 
 ## 使い方
 
@@ -14,7 +14,8 @@
 
 - `Alt+0` 〜 `Alt+9` … タブを直接切り替え
 - タブ右上の青いドット … その番号にデータあり
-- Title / Memo 欄は入力即時保存（localStorage）
+- Title / Memo 欄は入力即時保存（`chrome.storage.local`）
+- popup / sidepanel / options を複数開いていても、片方の編集が即座に他方へ反映される
 
 ## 技術スタック
 
@@ -84,7 +85,8 @@ components/
   tabs/           # TabBar (horizontal) / TabList (vertical)
   MemoEditor.tsx  # Title + Memo + 文字数
   Layout/Header.tsx
-hooks/            # useLocalStorage / useActiveTab / useNumberShortcut
+hooks/            # useStorage / useActiveTab / useNumberShortcut
+lib/              # storage アイテム定義 (storage.ts) / 旧 localStorage 移行 (migrate.ts)
 assets/           # グローバル CSS (Tailwind)
 public/icons/
 tests/            # Vitest テスト

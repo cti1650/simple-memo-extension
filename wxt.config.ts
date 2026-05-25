@@ -6,7 +6,7 @@ export default defineConfig({
   manifest: {
     name: 'Simple Memo Extension',
     description: 'Simple Memo Extension',
-    permissions: ['contextMenus', 'sidePanel'],
+    permissions: ['contextMenus', 'sidePanel', 'storage'],
     action: {
       default_title: 'Simple Memo Extension',
     },

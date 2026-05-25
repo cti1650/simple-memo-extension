@@ -1,5 +1,6 @@
 import cc from 'classcat';
-import { useLocalStorageData } from '@/hooks/useLocalStorage';
+import { useStorage } from '@/hooks/useStorage';
+import { memoItems, titleItems } from '@/lib/storage';
 
 type Props = {
   active: number;
@@ -25,12 +26,10 @@ type TabRowProps = {
 };
 
 const TabRow = ({ index, focus, onSelect }: TabRowProps) => {
-  const [getTitle] = useLocalStorageData<string>(`title_${index}`);
-  const [getValue] = useLocalStorageData<string>(String(index));
-  const title = getTitle() ?? '';
-  const value = getValue() ?? '';
-  const hasData = Boolean(title || value);
-  const preview = title || value.replace(/\s+/g, ' ').slice(0, 60) || '(空)';
+  const [title] = useStorage(titleItems[index]);
+  const [memo] = useStorage(memoItems[index]);
+  const hasData = Boolean(title || memo);
+  const preview = title || memo.replace(/\s+/g, ' ').slice(0, 60) || '(空)';
 
   return (
     <button

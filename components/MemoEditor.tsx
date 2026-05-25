@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useStorage } from '@/hooks/useStorage';
+import { memoItems, titleItems } from '@/lib/storage';
 
 type Props = {
   index: number;
@@ -8,26 +9,22 @@ type Props = {
 };
 
 export const MemoEditor = ({ index, fill = false }: Props) => {
-  const [title, setTitle] = useLocalStorage<string>(`title_${index}`, '');
-  const [value, setValue] = useLocalStorage<string>(String(index), '');
+  const [title, setTitle] = useStorage(titleItems[index]);
+  const [value, setValue] = useStorage(memoItems[index]);
 
   const handleChangeTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const next = e.target.value;
-      setTitle((prev) => (prev !== next ? next : prev));
+      setTitle(e.target.value);
     },
     [setTitle],
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const next = e.target.value;
-      setValue((prev) => (prev !== next ? next : prev));
+      setValue(e.target.value);
     },
     [setValue],
   );
-
-  const length = value?.length ?? 0;
 
   return (
     <div className={`w-full flex flex-col gap-2 ${fill ? 'h-full min-h-0' : ''}`}>
@@ -37,7 +34,7 @@ export const MemoEditor = ({ index, fill = false }: Props) => {
           type="text"
           onChange={handleChangeTitle}
           className="w-full px-2 py-1 text-lg break-all border border-gray-200 rounded-lg inset-shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={title ?? ''}
+          value={title}
           placeholder={`タブ ${index} のタイトル`}
         />
       </label>
@@ -49,11 +46,11 @@ export const MemoEditor = ({ index, fill = false }: Props) => {
             fill ? 'flex-1 min-h-0' : ''
           }`}
           style={fill ? undefined : { height: '430px' }}
-          value={value ?? ''}
+          value={value}
           placeholder="ここにメモを入力"
         />
       </label>
-      <div className="text-xs text-gray-500 text-right select-none">{length} 文字</div>
+      <div className="text-xs text-gray-500 text-right select-none">{value.length} 文字</div>
     </div>
   );
 };

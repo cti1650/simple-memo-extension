@@ -1,18 +1,18 @@
 import { useCallback } from 'react';
-import { useLocalStorage } from './useLocalStorage';
+import { activeTabItem, TAB_COUNT } from '@/lib/storage';
+import { useStorage } from './useStorage';
 
-export const TAB_COUNT = 10;
+export { TAB_COUNT };
 
 export function useActiveTab() {
-  const [stored, setStored] = useLocalStorage<number>('tabPage', 0);
-  const active = stored ?? 0;
+  const [active, setStored] = useStorage(activeTabItem);
 
   const setActive = useCallback(
     (index: number) => {
       const clamped = Math.max(0, Math.min(TAB_COUNT - 1, index));
-      setStored((prev) => (prev !== clamped ? clamped : prev));
+      if (clamped !== active) setStored(clamped);
     },
-    [setStored],
+    [active, setStored],
   );
 
   return { active, setActive };

@@ -1,5 +1,6 @@
 import cc from 'classcat';
-import { useLocalStorageData } from '@/hooks/useLocalStorage';
+import { useStorage } from '@/hooks/useStorage';
+import { memoItems, titleItems } from '@/lib/storage';
 
 type Props = {
   active: number;
@@ -25,10 +26,9 @@ type TabButtonProps = {
 };
 
 const TabButton = ({ index, focus, onSelect }: TabButtonProps) => {
-  const [getTitle] = useLocalStorageData<string>(`title_${index}`);
-  const [getValue] = useLocalStorageData<string>(String(index));
-  const title = getTitle() ?? '';
-  const hasData = Boolean(title || getValue());
+  const [title] = useStorage(titleItems[index]);
+  const [memo] = useStorage(memoItems[index]);
+  const hasData = Boolean(title || memo);
 
   return (
     <button
