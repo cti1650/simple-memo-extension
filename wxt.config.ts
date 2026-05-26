@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'wxt';
 
 export default defineConfig({
-  modules: ['@wxt-dev/module-react'],
+  modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons'],
   manifest: {
     name: 'Simple Memo Extension',
     description: 'Simple Memo Extension',
@@ -29,11 +29,7 @@ export default defineConfig({
         description: 'Simple Memo を options ページで開く',
       },
     },
-    icons: {
-      16: 'icons/icon-16x16.png',
-      48: 'icons/icon-48x48.png',
-      128: 'icons/icon-128x128.png',
-    },
+    // icons は @wxt-dev/auto-icons が assets/icon.png から自動生成する
   },
   vite: () => ({
     plugins: [tailwindcss()],

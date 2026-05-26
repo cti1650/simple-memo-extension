@@ -32,6 +32,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@wxt-dev/auto-icons": "^1.1.1",
     "@wxt-dev/module-react": "^1.2.2",
     "jsdom": "^29.1.1",
     "lefthook": "^2.1.8",
@@ -44,6 +45,7 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "lefthook",
+      "sharp",
       "spawn-sync"
     ]
   }

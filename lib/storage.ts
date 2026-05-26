@@ -20,11 +20,3 @@ export const memoItems = Array.from({ length: TAB_COUNT }, (_, index) =>
 export const activeTabItem = storage.defineItem<number>('local:active_tab', {
   fallback: 0,
 });
-
-export type StorageItem<T> = (typeof titleItems)[number] extends infer I
-  ? I extends { getValue: () => Promise<infer V> }
-    ? V extends T
-      ? I
-      : never
-    : never
-  : never;

@@ -13,19 +13,34 @@
 ### 共通操作
 
 - `Alt+0` 〜 `Alt+9` … タブを直接切り替え
+- 矢印キー (`←/→` または `↑/↓`)・`Home`・`End` … タブリスト内でフォーカス移動
 - タブ右上の青いドット … その番号にデータあり
 - Title / Memo 欄は入力即時保存（`chrome.storage.local`）
 - popup / sidepanel / options を複数開いていても、片方の編集が即座に他方へ反映される
 
+### ショートカットの変更
+
+`Alt+Shift+M` / `Alt+Shift+O` が他の拡張機能や OS と競合する場合、
+`chrome://extensions/shortcuts` から自由に再割当てできます。
+
+### データの保存先・プライバシー
+
+- すべてのメモは **`chrome.storage.local`** にのみ保存されます
+- **外部送信・同期は一切行いません**（`chrome.storage.sync` も使いません）
+- 拡張機能をアンインストールするとデータは削除されます
+- DevTools (Application → Storage → Extension Storage → Local) から内容を直接確認できます
+
 ## 技術スタック
 
-- [WXT](https://wxt.dev/) (Manifest V3)
+- [WXT](https://wxt.dev/) (Manifest V3) + `@wxt-dev/module-react` + `@wxt-dev/auto-icons`
 - React 19 + TypeScript
 - Tailwind CSS v4
 - パッケージ管理: **pnpm**
 - Lint / Format: **Biome**
 - Test: **Vitest** + Testing Library (jsdom)
 - Git hooks: **Lefthook**
+- CI: GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml))
+- 依存関係更新: Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 
 ## セットアップ
 
@@ -79,18 +94,28 @@ entrypoints/
   popup/          # Popup (action click)
   sidepanel/      # Side panel
   options/        # Options page (open_in_tab)
-  background.ts   # 右クリックメニュー / Alt+Shift+M ハンドラ
+  background.ts   # 右クリックメニュー / コマンドハンドラ
 components/
   layouts/        # PopupApp / SidepanelApp / OptionsApp
   tabs/           # TabBar (horizontal) / TabList (vertical)
+  Header.tsx
   MemoEditor.tsx  # Title + Memo + 文字数
-  Layout/Header.tsx
-hooks/            # useStorage / useActiveTab / useNumberShortcut
-lib/              # storage アイテム定義 (storage.ts) / 旧 localStorage 移行 (migrate.ts)
-assets/           # グローバル CSS (Tailwind)
-public/icons/
-tests/            # Vitest テスト
-wxt.config.ts     # WXT / manifest 設定
+hooks/
+  useStorage.ts
+  useActiveTab.ts
+  useNumberShortcut.ts
+  useTabKeyboardNav.ts
+lib/
+  storage.ts      # 全 storage アイテムの集約定義
+  migrate.ts      # 旧 localStorage → chrome.storage への一回限り移行
+assets/
+  global.css      # Tailwind v4 エントリ
+  icon.png        # @wxt-dev/auto-icons の源画像 (16/32/48/128 を自動生成)
+tests/
+.github/
+  workflows/ci.yml
+  dependabot.yml
+wxt.config.ts
 biome.json
 vitest.config.ts
 lefthook.yml

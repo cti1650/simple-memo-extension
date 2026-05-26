@@ -1,4 +1,4 @@
-import { Header } from '@/components/Layout/Header';
+import { Header } from '@/components/Header';
 import { MemoEditor } from '@/components/MemoEditor';
 import { TabList } from '@/components/tabs/TabList';
 import { TAB_COUNT, useActiveTab } from '@/hooks/useActiveTab';

@@ -7,36 +7,55 @@ const sidePanel = (browser as unknown as { sidePanel: SidePanelApi }).sidePanel;
 export default defineBackground(() => {
   const openSidePanel = async (windowId: number | undefined) => {
     if (windowId == null) return;
-    await sidePanel.open({ windowId });
+    try {
+      await sidePanel.open({ windowId });
+    } catch (error) {
+      console.error('[simple-memo] sidePanel.open failed:', error);
+    }
   };
 
-  browser.runtime.onInstalled.addListener(() => {
-    browser.contextMenus.create({
-      id: 'open-sidepanel',
-      title: 'Simple Memo を side panel で開く',
-      contexts: ['action', 'page'],
-    });
-    browser.contextMenus.create({
-      id: 'open-options',
-      title: 'Simple Memo を options ページで開く',
-      contexts: ['action', 'page'],
-    });
+  const openOptions = async () => {
+    try {
+      await browser.runtime.openOptionsPage();
+    } catch (error) {
+      console.error('[simple-memo] openOptionsPage failed:', error);
+    }
+  };
+
+  // 更新時に既存の context menu が残っていると create が "duplicate id" で
+  // 失敗するため、毎回 removeAll してから作り直す
+  browser.runtime.onInstalled.addListener(async () => {
+    try {
+      await browser.contextMenus.removeAll();
+      browser.contextMenus.create({
+        id: 'open-sidepanel',
+        title: 'Simple Memo を side panel で開く',
+        contexts: ['action', 'page'],
+      });
+      browser.contextMenus.create({
+        id: 'open-options',
+        title: 'Simple Memo を options ページで開く',
+        contexts: ['action', 'page'],
+      });
+    } catch (error) {
+      console.error('[simple-memo] context menu setup failed:', error);
+    }
   });
 
-  browser.contextMenus.onClicked.addListener(async (info, tab) => {
+  browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === 'open-sidepanel') {
-      await openSidePanel(tab?.windowId);
+      void openSidePanel(tab?.windowId);
     } else if (info.menuItemId === 'open-options') {
-      await browser.runtime.openOptionsPage();
+      void openOptions();
     }
   });
 
   browser.commands.onCommand.addListener(async (command) => {
     if (command === 'open-sidepanel') {
       const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-      await openSidePanel(tab?.windowId);
+      void openSidePanel(tab?.windowId);
     } else if (command === 'open-options') {
-      await browser.runtime.openOptionsPage();
+      void openOptions();
     }
   });
 });

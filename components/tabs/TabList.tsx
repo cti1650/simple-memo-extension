@@ -1,5 +1,6 @@
 import cc from 'classcat';
 import { useStorage } from '@/hooks/useStorage';
+import { useTabKeyboardNav } from '@/hooks/useTabKeyboardNav';
 import { memoItems, titleItems } from '@/lib/storage';
 
 type Props = {
@@ -9,8 +10,10 @@ type Props = {
 };
 
 export const TabList = ({ active, count, onSelect }: Props) => {
+  const handleKeyDown = useTabKeyboardNav(active, count, onSelect, 'vertical');
+
   return (
-    <nav aria-label="メモタブ" className="flex flex-col gap-1 p-2">
+    <nav aria-label="メモタブ" className="flex flex-col gap-1 p-2" onKeyDown={handleKeyDown}>
       {Array.from({ length: count }, (_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: index is the stable tab identifier
         <TabRow key={index} index={index} focus={index === active} onSelect={onSelect} />
@@ -35,6 +38,9 @@ const TabRow = ({ index, focus, onSelect }: TabRowProps) => {
     <button
       type="button"
       aria-current={focus ? 'page' : undefined}
+      data-tab-row
+      // roving tabindex: 選択中の行のみ Tab キーで入る
+      tabIndex={focus ? 0 : -1}
       className={cc([
         'flex flex-row items-center gap-3 px-3 py-2 text-left rounded-lg border transition-colors',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
