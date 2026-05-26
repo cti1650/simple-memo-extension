@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@utility popup-size {
+  width: 384px;
+  height: 558px;
+}

@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{js,jsx,ts,tsx,json,css}"
+      run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: pnpm compile
+    test:
+      run: pnpm test

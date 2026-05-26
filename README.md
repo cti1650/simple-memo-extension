@@ -1,95 +1,126 @@
-# はじめに
+# Simple Memo Extension
 
-このリポジトリは、Google Chrome の拡張を Next.js で書くためのテンプレートリポジトリになります。
+10タブ分のメモを **Popup / Side panel / Options** の3面から編集・保存できるシンプルなメモ拡張機能です。データは `chrome.storage.local` に保存され、3画面の間でライブ同期されます。
 
-# 使い方
+## 使い方
 
-## 1. リポジトリを clone する
+| 表示面 | 開き方 | 用途 |
+| --- | --- | --- |
+| **Popup** | ツールバーのアイコンクリック | サッと書く・読む |
+| **Side panel** | アイコン上 or ページ上の右クリック → 「Simple Memo を side panel で開く」 / `Alt+Shift+M` | ブラウジング中に常時表示 |
+| **Options** | アイコン上 or ページ上の右クリック → 「Simple Memo を options ページで開く」 / `Alt+Shift+O` / 拡張機能管理画面の「オプション」 | 一覧から選んでじっくり編集 |
 
-```bash
-git clone https://github.com/cti1650/github-search-extension.git
-```
+### 共通操作
 
-## 2. ライブラリをインストールする
+- `Alt+0` 〜 `Alt+9` … タブを直接切り替え
+- 矢印キー (`←/→` または `↑/↓`)・`Home`・`End` … タブリスト内でフォーカス移動
+- タブ右上の青いドット … その番号にデータあり
+- Title / Memo 欄は入力即時保存（`chrome.storage.local`）
+- popup / sidepanel / options を複数開いていても、片方の編集が即座に他方へ反映される
 
-```bash
-yarn
-```
+### ショートカットの変更
 
-## 3. Chrome Extension を作成する
+`Alt+Shift+M` / `Alt+Shift+O` が他の拡張機能や OS と競合する場合、
+`chrome://extensions/shortcuts` から自由に再割当てできます。
 
-```bash
-yarn export
-```
-以下のコマンドを実行するとPopupページの見た目を  
-localhostで検証することができます！
-```bash
-yarn dev
-```
+### データの保存先・プライバシー
 
-## 4. Chrome Extension を登録する
+- すべてのメモは **`chrome.storage.local`** にのみ保存されます
+- **外部送信・同期は一切行いません**（`chrome.storage.sync` も使いません）
+- 拡張機能をアンインストールするとデータは削除されます
+- DevTools (Application → Storage → Extension Storage → Local) から内容を直接確認できます
 
-#### a. Chrome 拡張機能ページにアクセス
+## 技術スタック
 
-```
-chrome://extensions/
-```
+- [WXT](https://wxt.dev/) (Manifest V3) + `@wxt-dev/module-react` + `@wxt-dev/auto-icons`
+- React 19 + TypeScript
+- Tailwind CSS v4
+- パッケージ管理: **pnpm**
+- Lint / Format: **Biome**
+- Test: **Vitest** + Testing Library (jsdom)
+- Git hooks: **Lefthook**
+- CI: GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml))
+- 依存関係更新: Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 
-#### b. 拡張機能をパッケージ化
-
-#### c. extensions ディレクトリをアップロード
-
-# 開発について
-
-- `Link`は可能ですが、`URL`の指定を`.html`まで記述する必要があります.
-- アプリ名などを指定する場合には`dist/manifest.json`を書き換えます.
-
-## 1. 公開用ファイルの生成
+## セットアップ
 
 ```bash
-yarn export
-```
-以下のコマンドを実行するとPopupページの見た目を  
-localhostで検証することができます！
-```bash
-yarn dev
+pnpm install
 ```
 
-## 2. 各オプション機能の実行
+`postinstall` で `wxt prepare` が、`prepare` で `lefthook install` が自動実行されます。
 
-#### a. 拡張機能の ZIP 化
+## 開発
 
 ```bash
-yarn ext-zip
+pnpm dev          # Chrome を自動起動してホットリロード
+pnpm dev:firefox  # Firefox
 ```
 
-#### b. 拡張機能用アイコンの自動生成
-
-manifest.json と同一階層に icons/icon.png ファイル(サイズ 128px 以上)を格納してから以下のコマンドを実行してください。  
-実行すると各サイズ(16px,19px,48px,128px)のアイコン生成と manifest.json へのパス設定を自動的に行います！
+## ビルド・配布
 
 ```bash
-yarn ext-icon-transparent --near
+pnpm build          # .output/chrome-mv3/ に成果物を生成
+pnpm build:firefox  # Firefox 向け
+pnpm zip            # ストア提出用 zip
 ```
 
-## 3. 拡張機能のバージョン管理
+`pnpm build` で生成された `.output/chrome-mv3/` を `chrome://extensions/` の「パッケージ化されていない拡張機能を読み込む」で読み込むと動作確認できます。
 
-#### a. メジャーアップデート（機能に大きな変更があった場合）
+## 品質チェック
 
 ```bash
-yarn ext-major
+pnpm compile     # tsc --noEmit
+pnpm lint        # Biome check
+pnpm lint:fix    # Biome auto-fix
+pnpm format      # Biome format only
+pnpm test        # Vitest (run once)
+pnpm test:watch  # Vitest watch mode
 ```
 
-#### b. マイナーアップデート（後方互換性を保つ変更があった場合）
+## Git Hooks (Lefthook)
 
-```bash
-yarn ext-minor
+| Hook | 実行内容 |
+| --- | --- |
+| `pre-commit` | staged ファイルに対して `biome check --write`（自動修正を再ステージ） |
+| `pre-push`   | `pnpm compile` と `pnpm test` |
+
+設定: [lefthook.yml](./lefthook.yml)
+
+## ディレクトリ構成
+
+```
+entrypoints/
+  popup/          # Popup (action click)
+  sidepanel/      # Side panel
+  options/        # Options page (open_in_tab)
+  background.ts   # 右クリックメニュー / コマンドハンドラ
+components/
+  layouts/        # PopupApp / SidepanelApp / OptionsApp
+  tabs/           # TabBar (horizontal) / TabList (vertical)
+  Header.tsx
+  MemoEditor.tsx  # Title + Memo + 文字数
+hooks/
+  useStorage.ts
+  useActiveTab.ts
+  useNumberShortcut.ts
+  useTabKeyboardNav.ts
+lib/
+  storage.ts      # 全 storage アイテムの集約定義
+  migrate.ts      # 旧 localStorage → chrome.storage への一回限り移行
+assets/
+  global.css      # Tailwind v4 エントリ
+  icon.png        # @wxt-dev/auto-icons の源画像 (16/32/48/128 を自動生成)
+tests/
+.github/
+  workflows/ci.yml
+  dependabot.yml
+wxt.config.ts
+biome.json
+vitest.config.ts
+lefthook.yml
 ```
 
-#### c. パッチアップデート（バグ修正が行われた場合）
+## バージョン更新
 
-```bash
-yarn ext-patch
-```
-
-※ `yarn export`時にはパッチアップデートが自動実行されます！
+`package.json` の `version` を更新してから `pnpm build` してください（WXT が自動で `manifest.json` に反映します）。

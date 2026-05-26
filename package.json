@@ -1,23 +1,52 @@
 {
-  "dependencies": {
-    "autoprefixer": "^10.3.4",
-    "chrome_extension_maker_tools": "https://github.com/cti1650/chrome_extension_maker_tools",
-    "classcat": "^5.0.3",
-    "next": "^11.1.2",
-    "postcss": "^8.3.6",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "tailwindcss": "^2.2.15"
-  },
+  "name": "simple-memo-extension",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.22.0",
   "scripts": {
-    "dev": "next dev",
-    "start": "next start",
-    "build": "next build",
-    "export": "next build && next export -o extensions/dist && yarn ext-patch"
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "lefthook install",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "classcat": "^5.0.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/node": "^16.9.1",
-    "@types/react": "^17.0.21",
-    "typescript": "^4.4.3"
+    "@biomejs/biome": "^2.4.15",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@wxt-dev/auto-icons": "^1.1.1",
+    "@wxt-dev/module-react": "^1.2.2",
+    "jsdom": "^29.1.1",
+    "lefthook": "^2.1.8",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.7",
+    "wxt": "^0.20.26"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook",
+      "sharp",
+      "spawn-sync"
+    ]
   }
 }
