@@ -1,7 +1,7 @@
 {
   "name": "simple-memo-extension",
   "private": true,
-  "version": "1.0.8",
+  "version": "1.1.0",
   "type": "module",
   "packageManager": "pnpm@10.22.0",
   "scripts": {
