@@ -28,17 +28,17 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
     "@tailwindcss/vite": "^4.0.0",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@wxt-dev/auto-icons": "^1.1.1",
     "@wxt-dev/module-react": "^1.2.2",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "lefthook": "^2.1.8",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.11",
     "wxt": "^0.20.26"
   },
   "pnpm": {
