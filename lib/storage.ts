@@ -20,3 +20,12 @@ export const memoItems = Array.from({ length: TAB_COUNT }, (_, index) =>
 export const activeTabItem = storage.defineItem<number>('local:active_tab', {
   fallback: 0,
 });
+
+/** ツールバーのアクションボタンをクリックしたときに開く表示面 */
+export type ActionBehavior = 'popup' | 'sidepanel' | 'options';
+
+export const ACTION_BEHAVIORS: readonly ActionBehavior[] = ['popup', 'sidepanel', 'options'];
+
+export const actionBehaviorItem = storage.defineItem<ActionBehavior>('local:action_behavior', {
+  fallback: 'popup',
+});
