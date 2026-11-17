@@ -1,3 +1,4 @@
+import { ActionBehaviorSelect } from '@/components/ActionBehaviorSelect';
 import { Header } from '@/components/Header';
 import { MemoEditor } from '@/components/MemoEditor';
 import { TabBar } from '@/components/tabs/TabBar';
@@ -15,6 +16,7 @@ export default function SidepanelApp() {
       <div className="flex-1 min-h-0">
         <MemoEditor index={active} fill />
       </div>
+      <ActionBehaviorSelect className="justify-end" />
     </div>
   );
 }
